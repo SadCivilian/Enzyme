@@ -12,14 +12,18 @@ type Results = {
 	Total : number
 }
 
+local function asset(id : number) : string
+	return "rbxassetid://" .. id
+end
+
 local StudioService = game:GetService("StudioService")
 local ScriptEditorService = game:GetService("ScriptEditorService")
 local Selection = game:GetService("Selection")
 local EnzymeToolbar = plugin:CreateToolbar("Enzyme")
 local ResultsDock = plugin:CreateDockWidgetPluginGuiAsync("ResultsDock", DockWidgetPluginGuiInfo.new(Enum.InitialDockState.Float, false, false, 400, 400, 400, 400))
-local AnalyzeCurrentScriptButton = EnzymeToolbar:CreateButton("AnalyzeCurrentScriptButton", "Analyzes the current script.", "tbm", "Analyze Current Script")
-local AnalyzeUnderInstanceButton = EnzymeToolbar:CreateButton("AnalyzeUnderInstancesButton", "Analyzes the scripts which are a descendant of the selected objects.", "tbm", "Analyze Under Instances")
-local AnalyzeGameButton = EnzymeToolbar:CreateButton("AnalyzeGameButton", "Analyzes your entire DataModel.", "tbm", "Analyze DataModel")
+local AnalyzeCurrentScriptButton = EnzymeToolbar:CreateButton("AnalyzeCurrentScriptButton", "Analyzes the current script.", asset(73185307343306), "Analyze Current Script")
+local AnalyzeUnderInstanceButton = EnzymeToolbar:CreateButton("AnalyzeUnderInstancesButton", "Analyzes the scripts which are a descendant of the selected objects.", asset(73185307343306), "Analyze Under Instances")
+local AnalyzeGameButton = EnzymeToolbar:CreateButton("AnalyzeGameButton", "Analyzes your entire DataModel.", asset(73185307343306), "Analyze DataModel")
 AnalyzeUnderInstanceButton.ClickableWhenViewportHidden = true
 AnalyzeGameButton.ClickableWhenViewportHidden = true
 ResultsDock.Title = "[Enzyme] Results"
