@@ -443,6 +443,7 @@ AnalyzeCurrentScriptButton.Click:Connect(function()
 	local active = StudioService.ActiveScript :: LuaSourceContainer
 	if not active then
 		warn("[Enzyme]: No script is active.")
+		return
 	end
 
 	local is, contexttype = getScriptTypeIfScript(active)
@@ -508,6 +509,8 @@ AnalyzeUnderInstanceButton.Click:Connect(function()
 
 		Results["Files"] += 1
 	end
+
+	Results["Total"] = newTotal
 
 	ConstructUIFromResults(Results)
 	ResultsDock.Enabled = true
