@@ -1,7 +1,10 @@
 [package]
-name = "SadCivilian/enzyme"
-version = "0.1.0"
+name = "sadcivilian/enzyme"
+description = 'A lines of code counter as a Roblox Studio plugin, inspired by "tokei".'
+authors = ["Sad Civilian"]
+version = "1.0.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
+exclude = ["assets"]
 
 [dependencies]
