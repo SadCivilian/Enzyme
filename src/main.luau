@@ -121,12 +121,12 @@ local function makeResultsFromScriptInformation(context : ScriptContextTypes, in
 		if v == context then
 			res[context] = {info}
 		else
-			res[v] = {}
+			res[v] = {} 
 		end
 	end
-
+	
 	local newTotal = makeEmptyTotalResult()
-
+	
 	for _, v in singleton do
 		if v == context then
 			newTotal[context] = info.ScriptStats
@@ -134,9 +134,9 @@ local function makeResultsFromScriptInformation(context : ScriptContextTypes, in
 			newTotal[v] = makeEmptyScriptStats()
 		end
 	end
-
+	
 	newTotal["Total"] = info.ScriptStats
-
+	
 	res["Total"] = newTotal
 	res["Files"] = 1
 	return res
@@ -155,7 +155,7 @@ local function makeFileFrameFromInformation(info : ScriptInformation)
 	local FileFrame = Instance.new("Frame")
 	FileFrame.Size = UDim2.fromScale(0.97, 0.035)
 	FileFrame.BackgroundTransparency = 1
-
+	
 	for i, name in ipairs(Names) do
 		local label = Instance.new("TextLabel")
 		label.Size = UDim2.fromScale(0.2, 1)
@@ -171,7 +171,7 @@ local function makeFileFrameFromInformation(info : ScriptInformation)
 		label.Name = name
 		label.Parent = FileFrame
 	end
-
+	
 	return FileFrame
 end
 
@@ -192,7 +192,7 @@ local function makeFileFramesFromTotal(totalResult : TotalResult) : {Frame}
 		local FileFrame = Instance.new("Frame")
 		FileFrame.Size = UDim2.fromScale(0.97, 0.035)
 		FileFrame.BackgroundTransparency = 1
-
+		
 		for j, name in ipairs(Names) do
 			local label = Instance.new("TextLabel")
 			label.Size = UDim2.fromScale(0.2, 1)
@@ -215,17 +215,17 @@ end
 
 -- Used for creating dynamic UI from a context.
 local function parentDynamicUIToFrameFromContext(parent : Instance, context : ScriptContextTypes | "Total", results : Results)
-	-- If this is the total we'll just do that and leave
+	-- If this is the total we'll just do that and leave	
 	if context == "Total" then
 		local Frames = makeFileFramesFromTotal(results["Total"])
 		for _, obj in Frames do
 			obj.Parent = parent
 		end
 		local BaseFrame = parent.Parent :: Frame
-		(BaseFrame:FindFirstChild("Context") :: TextLabel).Text = "Total" .. " [" .. results.Files .. "]"
+		(BaseFrame:FindFirstChild("Context") :: TextLabel).Text = "Total" .. " [" .. results.Files .. "]" 
 		return
 	end
-
+	
 	local resultIndex = results[context]
 	for _, info in ipairs(resultIndex) do
 		local newFrame = makeFileFrameFromInformation(info)
@@ -237,10 +237,10 @@ end
 local function ConstructUIFromResults(results : Results)
 	-- Convars
 	local posOffsetScale = 0.18
-
+	
 	-- State
 	local Page = 1
-
+	
 	-- Set up base UI
 	ResultsDock:ClearAllChildren()
 	local BaseFrame = Instance.new("Frame")
@@ -305,9 +305,9 @@ local function ConstructUIFromResults(results : Results)
 		label.TextColor3 = Color3.fromRGB(255,255,255)
 		label.Parent = BaseFrame
 	end
-
+	
 	parentDynamicUIToFrameFromContext(FileFrame, "Client", results)
-
+	
 	Forward.MouseButton1Click:Connect(function()
 		local newPage = reverseClamp(Page + 1, 1, 5)
 		Page = newPage
@@ -315,9 +315,9 @@ local function ConstructUIFromResults(results : Results)
 		cleanFrames(FileFrame)
 		local resultIndex = results[newContext]
 		Context.Text = newContext .. " [" .. #resultIndex .. "]"
-		parentDynamicUIToFrameFromContext(FileFrame, newContext, results)
+		parentDynamicUIToFrameFromContext(FileFrame, newContext :: ScriptContextTypes, results)
 	end)
-
+	
 	Backward.MouseButton1Click:Connect(function()
 		local newPage = reverseClamp(Page - 1, 1, 5)
 		Page = newPage
@@ -325,9 +325,9 @@ local function ConstructUIFromResults(results : Results)
 		cleanFrames(FileFrame)
 		local resultIndex = results[newContext]
 		Context.Text = newContext .. " [" .. #resultIndex .. "]"
-		parentDynamicUIToFrameFromContext(FileFrame, newContext, results)
+		parentDynamicUIToFrameFromContext(FileFrame, newContext :: ScriptContextTypes, results)
 	end)
-
+	
 	BaseFrame.Parent = ResultsDock
 end
 
@@ -340,19 +340,19 @@ end
 
 -- Returns a boolean on whether a line of code is a PURE comment, meaning the line is purely a comment and does not include any code (similar to this current line!)
 local function IsPureNonBlockComment(line : string)
-	return trimWhitespaceFromString(line):sub(1,2) == "--"
+	return trimWhitespaceFromString(line):sub(1,2) == "--" 
 end
 
 -- Returns a ScriptInformation object from a script.
 local function getScriptInformation(container : Script | LocalScript | ModuleScript | LuaSourceContainer) : ScriptInformation
-	local lines = string.split(container.Source, "\n")
-
+	local lines = string.split(ScriptEditorService:GetEditorSource(container), "\n")	
+	
 	local blanks = 0
 	local code = 0
 	local comments = 0
-
+	
 	local InBlockComment = false
-
+	
 	for index, line in ipairs(lines) do
 		if line:find("--[[", 1, true) then
 			InBlockComment = true
@@ -361,31 +361,31 @@ local function getScriptInformation(container : Script | LocalScript | ModuleScr
 			InBlockComment = false
 			continue
 		end
-
+		
 		if trimWhitespaceFromString(line) == "" then
 			blanks += 1
 			continue
 		end
-
+		
 		if InBlockComment then
 			comments += 1
 			continue
 		end
-
+		
 		if IsPureNonBlockComment(line) then
 			comments += 1
 		else
 			code += 1
 		end
 	end
-
+	
 	-- Create the ScriptStats
 	local newScriptStats = makeEmptyScriptStats()
 	newScriptStats.Lines = #lines
 	newScriptStats.Code = code
 	newScriptStats.Blanks = blanks
-	newScriptStats.Comments = comments
-
+	newScriptStats.Comments = comments	
+	
 	return {FileName = container.Name, ScriptStats = newScriptStats} :: ScriptInformation
 end
 
@@ -403,14 +403,14 @@ end
 
 -- Returns whether the given object is a script, and if it is, returns its RunContext (or Module, as modules can be either).
 local function getScriptTypeIfScript(obj : Instance) : (boolean, ScriptContextTypes?)
-	if obj:IsA("LuaSourceContainer") then
+	if obj:IsA("LuaSourceContainer") then 
 		if obj:IsA("BaseScript") then -- Like what even
 			if obj.RunContext == Enum.RunContext.Legacy then
 				return true, GetLegacyScriptRunContext(obj)
 			end
 			return true, obj.RunContext.Name :: ScriptContextTypes
 		else
-			return true, "Module"
+			return true, "Module" 
 		end
 	else
 		return false, nil
@@ -434,7 +434,7 @@ local function mergeDict<T, V>(t1 : {[T] : V}, t2 : {[T] : V}) : {[T] : V}
 	for obj, value in t2 do
 		if not t1[obj] then
 			t1[obj] = value
-		end
+		end 
 	end
 	return t1
 end
@@ -445,13 +445,13 @@ AnalyzeCurrentScriptButton.Click:Connect(function()
 		warn("[Enzyme]: No script is active.")
 		return
 	end
-
+	
 	local is, contexttype = getScriptTypeIfScript(active)
 	local info = getScriptInformation(active)
-
+	
 	if not contexttype then return end -- Guard
-
-	local Results = makeResultsFromScriptInformation(contexttype, info)
+	
+	local Results = makeResultsFromScriptInformation(contexttype :: ScriptContextTypes, info)
 	ConstructUIFromResults(Results)
 	ResultsDock.Enabled = true
 end)
@@ -463,19 +463,19 @@ AnalyzeGameButton.Click:Connect(function()
 
 	for c, contexttype : ScriptContextTypes in files do
 		local new = getScriptInformation(c)
-
+	
 		table.insert(Results[contexttype], new)
-
+		
 		local index = newTotal[contexttype]
-
+		
 		newTotal[contexttype] = SumScriptStats(index, new.ScriptStats)
 		newTotal["Total"] = SumScriptStats(newTotal["Total"], new.ScriptStats)
-
+		
 		Results["Files"] += 1
 	end
-
+	
 	Results["Total"] = newTotal
-
+	
 	ConstructUIFromResults(Results)
 	ResultsDock.Enabled = true
 end)
@@ -485,12 +485,12 @@ AnalyzeUnderInstanceButton.Click:Connect(function()
 	for _, obj in Selection:Get() do
 		local localFiles = gatherScriptFilesInDirectory(obj)
 		local is, contexttype = getScriptTypeIfScript(obj)
-
+		
 		if is and contexttype then -- If the selected object is a script, include it as well
 			local objectDict = {[obj :: LuaSourceContainer] = contexttype}
-			localFiles = mergeDict(localFiles, objectDict)
+			localFiles = mergeDict(localFiles, objectDict) :: {[LuaSourceContainer] : ScriptContextTypes}
 		end
-
+		
 		files = mergeDict(files, localFiles) :: {[LuaSourceContainer] : ScriptContextTypes}
 	end
 
@@ -503,15 +503,15 @@ AnalyzeUnderInstanceButton.Click:Connect(function()
 		table.insert(Results[contexttype], new)
 
 		local index = newTotal[contexttype]
-
+		
 		newTotal[contexttype] = SumScriptStats(index, new.ScriptStats)
 		newTotal["Total"] = SumScriptStats(newTotal["Total"], new.ScriptStats)
-
+		
 		Results["Files"] += 1
 	end
-
+	
 	Results["Total"] = newTotal
-
+		
 	ConstructUIFromResults(Results)
 	ResultsDock.Enabled = true
 end)
